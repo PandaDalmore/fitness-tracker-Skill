@@ -18,15 +18,15 @@
     --border: #27272a;
     --border-strong: #3f3f46;
     --accent-red: #ff375f;
-    --accent-green: #30d158;
+    --accent-green: #34c759;
     --accent-blue: #00c7be;
-    --accent-orange: #ff8f3e;
+    --accent-orange: #ff9f0a;
     --accent-purple: #7c3aed;
     --accent-teal: #14b8a6;
     --glow-red: rgba(255, 55, 95, 0.4);
-    --glow-green: rgba(48, 209, 88, 0.4);
-    --glow-blue: rgba(0, 199, 190, 0.4);
-    --glow-orange: rgba(255, 143, 62, 0.4);
+    --glow-green: rgba(52, 199, 89, 0.35);
+    --glow-blue: rgba(0, 199, 190, 0.35);
+    --glow-orange: rgba(255, 159, 10, 0.35);
     --glow-purple: rgba(124, 58, 237, 0.4);
     --badge-text-white: #ffffff;
     --chart-grid: #27272a;
@@ -50,15 +50,15 @@
     --border: #e5e5ea;
     --border-strong: #d1d1d6;
     --accent-red: #e5243d;
-    --accent-green: #24a853;
+    --accent-green: #248a3d;
     --accent-blue: #009e96;
-    --accent-orange: #d97a2e;
+    --accent-orange: #cc7a00;
     --accent-purple: #6d28d9;
     --accent-teal: #0f9488;
     --glow-red: rgba(229, 36, 61, 0.25);
-    --glow-green: rgba(36, 168, 83, 0.25);
-    --glow-blue: rgba(0, 158, 150, 0.25);
-    --glow-orange: rgba(217, 122, 46, 0.25);
+    --glow-green: rgba(36, 138, 61, 0.2);
+    --glow-blue: rgba(0, 158, 150, 0.2);
+    --glow-orange: rgba(204, 122, 0, 0.2);
     --glow-purple: rgba(109, 40, 217, 0.25);
     --badge-text-white: #1c1c1e;
     --chart-grid: #e5e5ea;
@@ -151,13 +151,13 @@
   }
   .summary-card {
     background: var(--bg-card);
-    border-radius: 20px;
+    border-radius: 14px;
     padding: 20px;
     box-shadow: 0 4px 16px var(--shadow-card);
     border: 1px solid var(--border);
-    transition: transform 0.15s, box-shadow 0.15s, background 0.3s, border-color 0.3s;
+    transition: box-shadow 0.15s, background 0.3s, border-color 0.3s;
   }
-  .summary-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--shadow-card-hover); }
+  .summary-card:hover { box-shadow: 0 8px 24px var(--shadow-card-hover); }
   .summary-card .label { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; font-family: "Noto Sans SC", sans-serif; transition: color 0.3s; }
   .summary-card .value { font-size: 30px; font-weight: 700; line-height: 1.1; font-family: "Space Grotesk", "IBM Plex Sans", sans-serif; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; transition: color 0.3s, text-shadow 0.3s; }
   .summary-card .unit { font-size: 14px; font-weight: 400; color: var(--text-muted); margin-left: 2px; transition: color 0.3s; }
@@ -182,7 +182,7 @@
   @media (max-width: 768px) { .chart-grid { grid-template-columns: 1fr; } }
   .chart-card {
     background: var(--bg-card);
-    border-radius: 20px;
+    border-radius: 14px;
     padding: 24px;
     box-shadow: 0 4px 16px var(--shadow-card);
     border: 1px solid var(--border);
@@ -227,12 +227,11 @@
   .badge-amber { background: var(--glow-orange); color: var(--accent-orange); }
   .badge-red { background: var(--glow-red); color: var(--accent-red); }
   .badge-gray { background: var(--border-strong); color: var(--text-muted); }
-  .badge-blue { background: var(--glow-blue); color: var(--accent-blue); }
 
   /* Insights */
   .insights {
     background: var(--bg-card);
-    border-radius: 20px;
+    border-radius: 14px;
     padding: 24px;
     box-shadow: 0 4px 16px var(--shadow-card);
     border: 1px solid var(--border);
@@ -250,11 +249,10 @@
     font-family: "Noto Sans SC", sans-serif;
   }
   .insight-item .icon { flex-shrink: 0; font-size: 16px; }
-  .insight-good .icon { color: var(--accent-green); text-shadow: 0 0 10px var(--glow-green); }
-  .insight-warn .icon { color: var(--accent-orange); text-shadow: 0 0 10px var(--glow-orange); }
-  .insight-bad .icon { color: var(--accent-red); text-shadow: 0 0 10px var(--glow-red); }
-  .insight-info .icon { color: var(--accent-blue); text-shadow: 0 0 10px var(--glow-blue); }
-  [data-theme="light"] .insight-item .icon { text-shadow: none; }
+  .insight-good .icon { color: var(--accent-green); }
+  .insight-warn .icon { color: var(--accent-orange); }
+  .insight-bad .icon { color: var(--accent-red); }
+  .insight-info .icon { color: var(--accent-blue); }
 
   .footer {
     text-align: center;
@@ -707,7 +705,7 @@
     let deficitBadge = 'badge-gray';
     if (d.deficit != null) {
       if (d.deficit > 0) { deficitText = '+' + d.deficit; deficitBadge = 'badge-amber'; }
-      else if (d.deficit === 0) { deficitText = '0（平衡）'; deficitBadge = 'badge-blue'; }
+      else if (d.deficit === 0) { deficitText = '0（平衡）'; deficitBadge = 'badge-gray'; }
       else { deficitText = d.deficit; deficitBadge = 'badge-green'; }
     }
 

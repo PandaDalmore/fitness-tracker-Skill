@@ -18,15 +18,15 @@
     --border: #27272a;
     --border-strong: #3f3f46;
     --accent-red: #ff375f;
-    --accent-green: #30d158;
+    --accent-green: #34c759;
     --accent-blue: #00c7be;
-    --accent-orange: #ff8f3e;
+    --accent-orange: #ff9f0a;
     --accent-purple: #7c3aed;
     --accent-teal: #14b8a6;
     --glow-red: rgba(255, 55, 95, 0.4);
-    --glow-green: rgba(48, 209, 88, 0.4);
-    --glow-blue: rgba(0, 199, 190, 0.4);
-    --glow-orange: rgba(255, 143, 62, 0.4);
+    --glow-green: rgba(52, 199, 89, 0.35);
+    --glow-blue: rgba(0, 199, 190, 0.35);
+    --glow-orange: rgba(255, 159, 10, 0.35);
     --glow-purple: rgba(124, 58, 237, 0.4);
     --badge-text-white: #ffffff;
     --chart-grid: #27272a;
@@ -51,15 +51,15 @@
     --border: #e5e5ea;
     --border-strong: #d1d1d6;
     --accent-red: #e5243d;
-    --accent-green: #24a853;
+    --accent-green: #248a3d;
     --accent-blue: #009e96;
-    --accent-orange: #d97a2e;
+    --accent-orange: #cc7a00;
     --accent-purple: #6d28d9;
     --accent-teal: #0f9488;
     --glow-red: rgba(229, 36, 61, 0.25);
-    --glow-green: rgba(36, 168, 83, 0.25);
-    --glow-blue: rgba(0, 158, 150, 0.25);
-    --glow-orange: rgba(217, 122, 46, 0.25);
+    --glow-green: rgba(36, 138, 61, 0.2);
+    --glow-blue: rgba(0, 158, 150, 0.2);
+    --glow-orange: rgba(204, 122, 0, 0.2);
     --glow-purple: rgba(109, 40, 217, 0.25);
     --badge-text-white: #1c1c1e;
     --chart-grid: #e5e5ea;
@@ -153,26 +153,26 @@
   }
   .stat-card {
     background: var(--bg-card);
-    border-radius: 20px;
+    border-radius: 14px;
     padding: 20px;
     box-shadow: 0 4px 16px var(--shadow-card);
     border: 1px solid var(--border);
-    transition: transform 0.15s, box-shadow 0.15s, background 0.3s, border-color 0.3s;
+    transition: box-shadow 0.15s, background 0.3s, border-color 0.3s;
   }
-  .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--shadow-card-hover); }
+  .stat-card:hover { box-shadow: 0 8px 24px var(--shadow-card-hover); }
   .stat-card .label { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; font-family: "Noto Sans SC", sans-serif; transition: color 0.3s; }
   .stat-card .value { font-size: 34px; font-weight: 700; line-height: 1.1; font-family: "Space Grotesk", "IBM Plex Sans", sans-serif; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; transition: color 0.3s, text-shadow 0.3s; }
   .stat-card .unit { font-size: 14px; font-weight: 400; color: var(--text-muted); margin-left: 2px; transition: color 0.3s; }
   .stat-card .sub { font-size: 12px; color: var(--text-muted); margin-top: 6px; font-family: "Noto Sans SC", sans-serif; transition: color 0.3s; }
-  .stat-card.highlight .value { color: var(--text); text-shadow: 0 0 18px var(--glow-blue); }
+  .stat-card.highlight .value { color: var(--text); text-shadow: 0 0 6px var(--glow-blue); }
   [data-theme="light"] .stat-card.highlight .value { text-shadow: none; }
-  .stat-card.deficit-negative .value { color: var(--accent-green); text-shadow: 0 0 18px var(--glow-green); }
-  .stat-card.deficit-positive .value { color: var(--accent-orange); text-shadow: 0 0 18px var(--glow-orange); }
-  .stat-card.protein-good .value { color: var(--accent-green); text-shadow: 0 0 18px var(--glow-green); }
-  .stat-card.protein-warn .value { color: var(--accent-orange); text-shadow: 0 0 18px var(--glow-orange); }
-  .stat-card.protein-bad .value { color: var(--accent-red); text-shadow: 0 0 18px var(--glow-red); }
-  .stat-card.weight .value { color: var(--accent-orange); text-shadow: 0 0 18px var(--glow-orange); }
-  .stat-card.bodyfat .value { color: var(--accent-purple); text-shadow: 0 0 18px var(--glow-purple); }
+  .stat-card.deficit-negative .value { color: var(--accent-green); }
+  .stat-card.deficit-positive .value { color: var(--accent-orange); }
+  .stat-card.protein-good .value { color: var(--accent-green); }
+  .stat-card.protein-warn .value { color: var(--accent-orange); }
+  .stat-card.protein-bad .value { color: var(--accent-red); }
+  .stat-card.weight .value { color: var(--accent-orange); }
+  .stat-card.bodyfat .value { color: var(--accent-purple); }
   [data-theme="light"] .stat-card .value { text-shadow: none; }
 
   /* Chart grid */
@@ -185,7 +185,7 @@
   @media (max-width: 768px) { .chart-grid { grid-template-columns: 1fr; } }
   .chart-card {
     background: var(--bg-card);
-    border-radius: 20px;
+    border-radius: 14px;
     padding: 24px;
     box-shadow: 0 4px 16px var(--shadow-card);
     border: 1px solid var(--border);
@@ -211,8 +211,7 @@
     height: 140px;
     flex-shrink: 0;
   }
-  .protein-ring svg { transform: rotate(-90deg); filter: drop-shadow(0 0 10px var(--glow-green)); transition: filter 0.3s; }
-  [data-theme="light"] .protein-ring svg { filter: none; }
+  .protein-ring svg { transform: rotate(-90deg); }
   .protein-ring .center {
     position: absolute;
     top: 50%; left: 50%;
@@ -618,7 +617,7 @@
         <circle cx="70" cy="70" r="52" fill="none" stroke="var(--protein-ring-bg)" stroke-width="12"/>
         <circle cx="70" cy="70" r="52" fill="none" stroke="${ringColor}" stroke-width="12"
           stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
-          stroke-linecap="round" style="transition: stroke-dashoffset 0.8s ease; filter: drop-shadow(0 0 8px ${ringColor}66);"/>
+          stroke-linecap="round" style="transition: stroke-dashoffset 0.8s ease;"/>
       </svg>
       <div class="center">
         <div class="pct" style="color:${ringColor}">${proteinPct}%</div>

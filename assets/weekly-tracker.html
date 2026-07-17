@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('fitness-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>健身周数据追踪表</title>
+<style>
+  /* ===== Dark theme (default) ===== */
+  :root, [data-theme="dark"] {
+    --bg: #1c1c1e;
+    --bg-card: #2c2c2e;
+    --bg-inner: #1c1c1e;
+    --bg-input: #3a3a3c;
+    --text: #fafafa;
+    --text-secondary: #a1a1aa;
+    --text-muted: #71717a;
+    --border: #3a3a3c;
+    --border-strong: #52525b;
+    --accent-red: #ff375f;
+    --accent-green: #30d158;
+    --accent-blue: #00c7be;
+    --accent-orange: #ff8f3e;
+    --accent-purple: #7c3aed;
+    --glow-red: rgba(255, 55, 95, 0.3);
+    --glow-green: rgba(48, 209, 88, 0.3);
+    --glow-blue: rgba(0, 199, 190, 0.3);
+    --glow-orange: rgba(255, 143, 62, 0.3);
+    --shadow-card: rgba(0,0,0,0.35);
+    --theme-icon-fill: #fafafa;
+    --theme-btn-bg: rgba(255,255,255,0.08);
+    --theme-btn-hover: rgba(255,255,255,0.16);
+  }
+  /* ===== Light theme ===== */
+  [data-theme="light"] {
+    --bg: #f5f5f7;
+    --bg-card: #ffffff;
+    --bg-inner: #f0f0f2;
+    --bg-input: #ffffff;
+    --text: #1c1c1e;
+    --text-secondary: #6e6e73;
+    --text-muted: #8e8e93;
+    --border: #d1d1d6;
+    --border-strong: #b0b0b5;
+    --accent-red: #e5243d;
+    --accent-green: #24a853;
+    --accent-blue: #009e96;
+    --accent-orange: #d97a2e;
+    --accent-purple: #6d28d9;
+    --glow-red: rgba(229, 36, 61, 0.15);
+    --glow-green: rgba(36, 168, 83, 0.15);
+    --glow-blue: rgba(0, 158, 150, 0.15);
+    --glow-orange: rgba(217, 122, 46, 0.15);
+    --shadow-card: rgba(0,0,0,0.06);
+    --theme-icon-fill: #1c1c1e;
+    --theme-btn-bg: rgba(0,0,0,0.06);
+    --theme-btn-hover: rgba(0,0,0,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Space Grotesk", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background 0.3s, color 0.3s;
+    padding-bottom: 80px;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+  /* Header */
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .save-status {
+    font-size: 12px; color: var(--text-muted);
+    transition: color 0.3s;
+  }
+  .save-status.saved { color: var(--accent-green); }
+  .save-status.saving { color: var(--accent-orange); }
+
+  .theme-toggle {
+    display: flex; align-items: center; gap: 6px;
+    cursor: pointer; padding: 6px 12px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--theme-btn-bg);
+    transition: background 0.2s; user-select: none;
+    font-size: 13px; color: var(--text-secondary);
+  }
+  .theme-toggle:hover { background: var(--theme-btn-hover); }
+  .theme-toggle svg { width: 16px; height: 16px; fill: var(--theme-icon-fill); }
+
+  /* Profile bar */
+  .profile-bar {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;
+    background: var(--bg-card); border-radius: 14px; padding: 16px;
+    margin-bottom: 16px; border: 1px solid var(--border);
+    box-shadow: 0 2px 12px var(--shadow-card);
+  }
+  .profile-bar .field { display: flex; flex-direction: column; gap: 4px; }
+  .profile-bar label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+  .profile-bar input, .profile-bar select {
+    background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: 8px; padding: 6px 10px; color: var(--text);
+    font-size: 14px; font-family: inherit; width: 90px;
+    transition: border-color 0.2s;
+  }
+  .profile-bar input:focus, .profile-bar select:focus { outline: none; border-color: var(--accent-blue); }
+  .profile-bar .week-range { flex-direction: row; align-items: center; gap: 6px; }
+  .profile-bar .week-range input { width: 130px; }
+
+  /* Day tabs */
+  .day-tabs {
+    display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;
+  }
+  .day-tab {
+    flex: 1; min-width: 80px; padding: 10px 8px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--bg-card);
+    cursor: pointer; transition: all 0.2s; text-align: center;
+    font-family: inherit;
+  }
+  .day-tab .tab-day { font-size: 13px; font-weight: 700; color: var(--text); }
+  .day-tab .tab-date { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .day-tab:hover { border-color: var(--border-strong); }
+  .day-tab.active {
+    border-color: var(--accent-blue);
+    background: var(--glow-blue);
+  }
+  .day-tab.has-data .tab-day::after {
+    content: '●'; font-size: 8px; color: var(--accent-green);
+    margin-left: 4px; vertical-align: top;
+  }
+  .day-tab.rest .tab-day { color: var(--text-muted); }
+
+  /* Day form */
+  .day-form {
+    background: var(--bg-card); border-radius: 14px; padding: 20px;
+    border: 1px solid var(--border); box-shadow: 0 2px 12px var(--shadow-card);
+  }
+  .day-form.hidden { display: none; }
+  .form-section { margin-bottom: 20px; }
+  .form-section:last-child { margin-bottom: 0; }
+  .form-section h3 {
+    font-size: 14px; font-weight: 700; margin-bottom: 10px;
+    color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .form-section h3 .icon { font-size: 16px; }
+  .section-hint {
+    font-size: 11px; color: var(--text-muted); margin-bottom: 10px;
+    padding: 4px 8px; background: var(--bg-inner); border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+
+  /* Exercise rows */
+  .exercise-row {
+    display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;
+  }
+  .exercise-row select, .exercise-row input {
+    background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 10px; color: var(--text);
+    font-size: 13px; font-family: inherit;
+    transition: border-color 0.2s;
+  }
+  .exercise-row select { width: 140px; }
+  .exercise-row input { width: 80px; }
+  .exercise-row input:focus, .exercise-row select:focus { outline: none; border-color: var(--accent-blue); }
+  .exercise-row .calc {
+    font-size: 12px; color: var(--accent-green); min-width: 55px;
+    font-weight: 600;
+  }
+  .exercise-row .btn-remove {
+    background: none; border: none; color: var(--text-muted);
+    cursor: pointer; font-size: 18px; padding: 2px 6px;
+    transition: color 0.2s;
+  }
+  .exercise-row .btn-remove:hover { color: var(--accent-red); }
+  .exercise-row .met-explain {
+    font-size: 11px; color: var(--text-muted);
+    white-space: nowrap; min-width: 62px; padding: 4px 0;
+  }
+  .exercise-row input.custom-name { width: 100px !important; }
+  .exercise-row input.custom-met { width: 50px !important; text-align: center; }
+  .exercise-row select.is-custom { width: 80px; }
+  .btn-add {
+    background: none; border: 1px dashed var(--border-strong);
+    border-radius: 8px; padding: 6px 14px; color: var(--text-muted);
+    cursor: pointer; font-size: 13px; font-family: inherit;
+    transition: all 0.2s;
+  }
+  .btn-add:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+
+  /* Meal rows */
+  .meal-row {
+    display: grid; grid-template-columns: 56px 1fr 90px 40px;
+    gap: 8px; align-items: center; margin-bottom: 8px;
+  }
+  .meal-row .meal-label { font-size: 13px; color: var(--text-secondary); font-weight: 600; }
+  .meal-row input {
+    background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 10px; color: var(--text);
+    font-size: 13px; font-family: inherit;
+    transition: border-color 0.2s;
+  }
+  .meal-row input:focus { outline: none; border-color: var(--accent-blue); }
+  .meal-row input.cal { text-align: right; }
+  .meal-row input.cal::placeholder { color: var(--text-muted); font-size: 12px; }
+  .meal-photo-cell { display: flex; align-items: center; justify-content: center; }
+  .photo-btn {
+    width: 32px; height: 32px; border-radius: 8px; border: 1px dashed var(--border-strong);
+    background: var(--bg-input); cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; color: var(--text-muted);
+  }
+  .photo-btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+  .photo-thumb {
+    width: 32px; height: 32px; border-radius: 8px; object-fit: cover;
+    cursor: pointer; border: 2px solid var(--accent-blue);
+    transition: transform 0.15s;
+  }
+  .photo-thumb:hover { transform: scale(1.1); }
+  .photo-preview-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.8); z-index: 300;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .photo-preview-overlay .photo-preview-content {
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+    cursor: default; position: relative;
+  }
+  .photo-preview-overlay img {
+    max-width: 90%; max-height: 75vh; border-radius: 12px;
+  }
+  .photo-close-btn {
+    position: absolute; top: -40px; right: -10px;
+    background: rgba(255,255,255,0.15); border: none; color: #fff;
+    font-size: 22px; cursor: pointer; border-radius: 50%;
+    width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .photo-close-btn:hover { background: rgba(255,255,255,0.35); }
+  .photo-preview-info {
+    color: rgba(255,255,255,0.7); font-size: 12px; font-family: monospace;
+  }
+  .photo-preview-actions { display: flex; gap: 12px; }
+
+  /* Body data grid */
+  .body-grid {
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .body-grid .field { display: flex; flex-direction: column; gap: 4px; }
+  .body-grid label { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+  .body-grid input {
+    background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 10px; color: var(--text);
+    font-size: 14px; font-family: inherit; width: 100px;
+    transition: border-color 0.2s;
+  }
+  .body-grid input:focus { outline: none; border-color: var(--accent-blue); }
+
+  /* Sleep */
+  .sleep-row {
+    display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;
+  }
+  .sleep-row .field { display: flex; flex-direction: column; gap: 4px; }
+  .sleep-row label { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+  .sleep-row input, .sleep-row select {
+    background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 10px; color: var(--text);
+    font-size: 14px; font-family: inherit;
+    transition: border-color 0.2s;
+  }
+  .sleep-row input { width: 80px; }
+  .sleep-row select { width: 100px; }
+  .sleep-row input:focus, .sleep-row select:focus { outline: none; border-color: var(--accent-blue); }
+
+  /* Notes */
+  .notes-area {
+    width: 100%; min-height: 50px; resize: vertical;
+    background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 10px; color: var(--text);
+    font-size: 13px; font-family: inherit;
+    transition: border-color 0.2s;
+  }
+  .notes-area:focus { outline: none; border-color: var(--accent-blue); }
+
+  /* Steps input row */
+  .steps-row {
+    display: flex; gap: 8px; align-items: center; margin-top: 10px;
+  }
+  .steps-row label { font-size: 13px; color: var(--text-secondary); font-weight: 600; }
+  .steps-row input {
+    background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 10px; color: var(--text);
+    font-size: 14px; font-family: inherit; width: 100px;
+    transition: border-color 0.2s;
+  }
+  .steps-row input:focus { outline: none; border-color: var(--accent-blue); }
+  .steps-row .neat-calc { font-size: 12px; color: var(--accent-green); font-weight: 600; }
+
+  /* Sticky bottom bar */
+  .bottom-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--bg-card); border-top: 1px solid var(--border);
+    padding: 12px 20px; display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; z-index: 100; box-shadow: 0 -4px 20px var(--shadow-card);
+  }
+  .bottom-bar .live-stats {
+    display: flex; gap: 16px; font-size: 13px; flex-wrap: wrap;
+  }
+  .live-stats .stat { display: flex; flex-direction: column; gap: 1px; }
+  .live-stats .stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .live-stats .stat-value { font-size: 15px; font-weight: 700; color: var(--text); }
+  .live-stats .stat-value.green { color: var(--accent-green); }
+  .live-stats .stat-value.red { color: var(--accent-red); }
+  .live-stats .stat-value.blue { color: var(--accent-blue); }
+
+  .export-btns { display: flex; gap: 8px; }
+  .export-btn {
+    padding: 8px 16px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--bg-input); color: var(--text);
+    font-size: 13px; font-family: inherit; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  }
+  .export-btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+  .export-btn.primary {
+    background: var(--accent-blue); color: #fff; border-color: var(--accent-blue);
+  }
+  .export-btn.primary:hover { opacity: 0.9; }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+    background: var(--bg-card); border: 1px solid var(--accent-green);
+    color: var(--accent-green); padding: 10px 20px; border-radius: 10px;
+    font-size: 14px; font-weight: 600; z-index: 200;
+    box-shadow: 0 4px 20px var(--shadow-card);
+    opacity: 0; transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+
+  /* Save directory bar */
+  .save-dir-bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; margin-bottom: 12px;
+    background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: 10px; font-size: 13px;
+  }
+  .save-dir-bar .dir-icon { font-size: 14px; flex-shrink: 0; }
+  .save-dir-bar .dir-input {
+    flex: 1; min-width: 0;
+    background: transparent; border: 1px solid transparent;
+    color: var(--text-secondary); font-weight: 600; font-size: 13px;
+    font-family: inherit; padding: 4px 6px; border-radius: 6px;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .save-dir-bar .dir-input::placeholder { color: var(--text-muted); font-weight: 400; }
+  .save-dir-bar .dir-input:focus { outline: none; border-color: var(--border-strong); background: var(--bg-card); }
+  .save-dir-bar .dir-input.active { color: var(--accent-green); }
+  .save-dir-bar .dir-input.warning { color: var(--accent-orange); border-color: var(--accent-orange); background: rgba(255,143,62,0.08); }
+  .save-dir-bar .dir-btn {
+    padding: 4px 12px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--bg-card); color: var(--text); font-size: 12px;
+    font-family: inherit; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  }
+  .save-dir-bar .dir-btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+  .save-dir-bar .new-week-btn { border-color: var(--accent-green); color: var(--accent-green); }
+  .save-dir-bar .new-week-btn:hover { background: var(--accent-green); color: white; }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .container { padding: 12px; }
+    .header h1 { font-size: 18px; }
+    .day-tab { min-width: 50px; padding: 8px 4px; }
+    .day-tab .tab-day { font-size: 12px; }
+    .meal-row { grid-template-columns: 48px 1fr 70px 36px; }
+    .bottom-bar { flex-direction: column; padding: 10px; }
+    .export-btns { width: 100%; justify-content: center; }
+    .save-dir-bar { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1>🏋️ 健身周数据追踪表</h1>
+    <div class="header-right">
+      <span class="save-status" id="saveStatus">已保存</span>
+      <div class="theme-toggle" onclick="toggleTheme()">
+        <svg id="themeIcon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+        <span id="themeLabel">日间</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save directory bar -->
+  <div class="save-dir-bar">
+    <span class="dir-icon">📁</span>
+    <input type="text" class="dir-input" id="saveDirName" placeholder="选择目录后请补全完整路径，如 E:\Myworkbuddy\测试" onchange="saveDirPath()" oninput="validateDirPath()">
+    <button class="dir-btn" onclick="pickSaveDir().catch(e => { console.error(e); showToast('操作失败: ' + e.message); })">选择目录</button>
+    <button class="dir-btn new-week-btn" onclick="startNewWeek().catch(e => { console.error(e); showToast('操作失败: ' + e.message); })">🔄 新的一周</button>
+  </div>
+
+  <!-- Profile bar -->
+  <div class="profile-bar" id="profileBar">
+    <div class="field">
+      <label>目标</label>
+      <select id="pGoal" onchange="saveProfile()">
+        <option value="减脂">减脂</option>
+        <option value="增肌">增肌</option>
+        <option value="维持">维持</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>体重(kg)</label>
+      <input type="number" id="pWeight" value="68" step="0.1" min="0" onchange="saveProfile()">
+    </div>
+    <div class="field">
+      <label>BMR(kcal)</label>
+      <input type="number" id="pBmr" value="1605" min="0" onchange="saveProfile()">
+    </div>
+    <div class="field">
+      <label>BMR来源</label>
+      <select id="pBmrSource" onchange="saveProfile()">
+        <option value="估算">估算</option>
+        <option value="实测">实测</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>蛋白目标(g)</label>
+      <input type="number" id="pProtein" value="122" min="0" onchange="saveProfile()">
+    </div>
+    <div class="field week-range">
+      <label>周开始</label>
+      <input type="date" id="weekStart" onchange="onWeekChange()">
+      <span style="color:var(--text-muted)">~</span>
+      <input type="date" id="weekEnd" onchange="saveData()">
+    </div>
+  </div>
+
+  <!-- Day tabs -->
+  <div class="day-tabs" id="dayTabs"></div>
+
+  <!-- Day forms -->
+  <div id="dayForms"></div>
+</div>
+
+<!-- Sticky bottom bar -->
+<div class="bottom-bar">
+  <div class="live-stats" id="liveStats">
+    <div class="stat"><span class="stat-label">摄入</span><span class="stat-value" id="liveIntake">0</span></div>
+    <div class="stat"><span class="stat-label">TDEE</span><span class="stat-value blue" id="liveTdee">0</span></div>
+    <div class="stat"><span class="stat-label">缺口</span><span class="stat-value" id="liveDeficit">0</span></div>
+    <div class="stat"><span class="stat-label">蛋白质</span><span class="stat-value" id="liveProtein">—</span></div>
+  </div>
+  <div class="export-btns">
+    <button class="export-btn" onclick="exportMD()">📄 导出 MD</button>
+    <button class="export-btn" onclick="loadFromMD().catch(e => { console.error(e); showToast('操作失败: ' + e.message); })">📥 更新数据</button>
+    <button class="export-btn" onclick="saveAndSend('日报').catch(e => { console.error(e); showToast('操作失败: ' + e.message); })">📊 日报</button>
+    <button class="export-btn primary" onclick="saveAndSend('周报').catch(e => { console.error(e); showToast('操作失败: ' + e.message); })">📈 周报</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Embedded data for AI to read -->
+<script type="application/json" id="trackerData">
+{"profile":{"weight":68,"bmr":1605,"bmrSource":"估算","goal":"增肌","proteinTarget":122},"weekStart":"","weekEnd":"","days":[]}
+</script>
+
+<script>
+// ===== MET table =====
+const MET_TABLE = [
+  { type: '拉伸/瑜伽', met: 2.5 },
+  { type: '散步', met: 3.0 },
+  { type: '力量训练', met: 4.0 },
+  { type: '骑行（通勤，~15km/h）', met: 5.0 },
+  { type: '骑行（运动）', met: 6.0 },
+  { type: '慢跑 8km/h', met: 7.0 },
+  { type: '游泳', met: 7.0 },
+  { type: '跳绳/战绳', met: 10.0 },
+  { type: '高强度间歇', met: 12.0 },
+  { type: '自定义', met: 0, isCustom: true }
+];
+
+const DAY_NAMES = ['周一','周二','周三','周四','周五','周六','周日'];
+
+// ===== Data model =====
+let D = {
+  profile: { weight: 68, bmr: 1605, bmrSource: '估算', goal: '增肌', proteinTarget: 122 },
+  weekStart: '',
+  weekEnd: '',
+  days: []
+};
+
+let activeDay = 0;
+
+// ===== Init =====
+function init() {
+  // Load theme
+  const theme = localStorage.getItem('fitness-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', theme);
+  updateThemeLabel(theme);
+
+  // Load data from localStorage
+  const saved = localStorage.getItem('fitness-tracker-data');
+  if (saved) {
+    try {
+      D = JSON.parse(saved);
+    } catch(e) { resetData(); }
+  } else {
+    resetData();
+  }
+
+  // If no weekStart, default to this week's Monday
+  if (!D.weekStart) {
+    const today = new Date();
+    const day = today.getDay() || 7;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - day + 1);
+    D.weekStart = monday.toISOString().slice(0,10);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    D.weekEnd = sunday.toISOString().slice(0,10);
+  }
+
+  // Ensure 7 days
+  if (!Array.isArray(D.days) || D.days.length !== 7) {
+    D.days = DAY_NAMES.map((name, i) => makeEmptyDay(name, D.weekStart, i));
+  }
+
+  // Fill in missing dates from weekStart
+  if (D.weekStart) {
+    D.days.forEach((day, i) => {
+      if (!day.date) {
+        const d = new Date(D.weekStart);
+        d.setDate(d.getDate() + i);
+        day.date = d.toISOString().slice(0,10);
+      }
+    });
+  }
+
+  // Fill profile UI
+  document.getElementById('pGoal').value = D.profile.goal;
+  document.getElementById('pWeight').value = D.profile.weight;
+  document.getElementById('pBmr').value = D.profile.bmr;
+  document.getElementById('pBmrSource').value = D.profile.bmrSource;
+  document.getElementById('pProtein').value = D.profile.proteinTarget;
+  document.getElementById('weekStart').value = D.weekStart;
+  document.getElementById('weekEnd').value = D.weekEnd;
+
+  renderTabs();
+  renderForms();
+  updateLiveStats();
+  updateEmbeddedData();
+  initSaveDir(); // Restore save directory handle
+}
+
+function makeEmptyDay(name, weekStart, idx) {
+  let date = '';
+  if (weekStart) {
+    const d = new Date(weekStart);
+    d.setDate(d.getDate() + idx);
+    date = d.toISOString().slice(0,10);
+  }
+  return {
+    day: name, date: date,
+    exercises: [{ type: '', met: 0, duration: 0, isCustom: false }],
+    steps: 0,
+    meals: [
+      { name: '早餐', items: '', calories: null, photo: null },
+      { name: '午餐', items: '', calories: null, photo: null },
+      { name: '晚餐', items: '', calories: null, photo: null },
+      { name: '加餐', items: '', calories: null, photo: null }
+    ],
+    weight: null, bodyFat: null, waist: null,
+    sleep: null, sleepQuality: '', notes: ''
+  };
+}
+
+function resetData() {
+  D = {
+    profile: { weight: 68, bmr: 1605, bmrSource: '估算', goal: '增肌', proteinTarget: 122 },
+    weekStart: '', weekEnd: '',
+    days: DAY_NAMES.map((name, i) => makeEmptyDay(name, '', i))
+  };
+}
+
+// ===== Render tabs =====
+function renderTabs() {
+  const container = document.getElementById('dayTabs');
+  container.innerHTML = '';
+  D.days.forEach((d, i) => {
+    const tab = document.createElement('div');
+    tab.className = 'day-tab';
+    if (i === activeDay) tab.classList.add('active');
+    if (hasData(d)) tab.classList.add('has-data');
+    if (isRestDay(d)) tab.classList.add('rest');
+    const dateShort = d.date ? d.date.slice(5) : '';
+    tab.innerHTML = `<div class="tab-day">${d.day}</div><div class="tab-date">${dateShort}</div>`;
+    tab.onclick = () => { activeDay = i; renderTabs(); renderForms(); updateLiveStats(); };
+    container.appendChild(tab);
+  });
+}
+
+function hasData(d) {
+  return (d.exercises.some(e => e.duration > 0) || d.steps > 0 ||
+    d.meals.some(m => m.calories > 0) || d.weight != null);
+}
+function isRestDay(d) {
+  return !hasData(d) && !d.notes;
+}
+
+// ===== Render forms =====
+function renderForms() {
+  const container = document.getElementById('dayForms');
+  container.innerHTML = '';
+  D.days.forEach((d, i) => {
+    const form = document.createElement('div');
+    form.className = 'day-form' + (i !== activeDay ? ' hidden' : '');
+    form.innerHTML = buildDayForm(d, i);
+    container.appendChild(form);
+  });
+}
+
+function buildDayForm(d, idx) {
+  // Exercise rows
+  let exHtml = '';
+  d.exercises.forEach((ex, ei) => {
+    const isCustom = ex.isCustom === true;
+    const calc = ex.met > 0 && ex.duration > 0
+      ? Math.round(ex.met * D.profile.weight * (ex.duration / 60)) : 0;
+
+    // Build option list: preset options show "(MET)", custom shows without number
+    const options = MET_TABLE.map(m => {
+      let selected = false;
+      if (isCustom) {
+        selected = m.isCustom === true;
+      } else {
+        selected = ex.met === m.met && ex.type === m.type;
+      }
+      const label = m.isCustom ? m.type : `${m.type}（强度${m.met}）`;
+      return `<option value="${m.met}" data-custom="${m.isCustom ? '1' : '0'}" ${selected ? 'selected' : ''}>${label}</option>`;
+    }).join('');
+
+    let rowHtml = `
+      <div class="exercise-row">
+        <select class="${isCustom ? 'is-custom' : ''}" onchange="onExerciseSelect(${idx},${ei},this)">
+          <option value="0">选择运动...</option>
+          ${options}
+        </select>`;
+
+    if (isCustom) {
+      rowHtml += `
+        <input type="text" class="custom-name" placeholder="运动名称" value="${esc(ex.type || '')}" onchange="updateExercise(${idx},${ei},'type',this.value)">
+        <input type="number" class="custom-met" placeholder="强度值" step="0.5" min="1" max="20" value="${ex.met > 0 ? ex.met : ''}" onchange="updateExercise(${idx},${ei},'met',parseFloat(this.value)||0)">`;
+    }
+
+    rowHtml += `
+        <input type="number" placeholder="分钟" value="${ex.duration || ''}" min="0" onchange="updateExercise(${idx},${ei},'duration',parseInt(this.value)||0)">
+        <span class="calc">${calc > 0 ? calc + ' kcal' : ''}</span>
+        <button class="btn-remove" onclick="removeExercise(${idx},${ei})">×</button>
+      </div>`;
+    exHtml += rowHtml;
+  });
+
+  // Meal rows
+  let mealHtml = '';
+  d.meals.forEach((m, mi) => {
+    const photoFileName = `${d.date}-${m.name}.jpg`;
+    const photoCell = m.photo
+      ? `<img class="photo-thumb" src="${m.photo}" onclick="previewPhoto(${idx},${mi})" title="${photoFileName} — 点击查看">`
+      : `<div class="photo-btn" onclick="document.getElementById('photo-input-${idx}-${mi}').click()">📷</div>`;
+    mealHtml += `
+      <div class="meal-row">
+        <span class="meal-label">${m.name}</span>
+        <input type="text" placeholder="食物描述（不知道热量可留空让 AI 估算）" value="${esc(m.items)}" onchange="updateMeal(${idx},${mi},'items',this.value)">
+        <input type="number" class="cal" placeholder="kcal" value="${m.calories != null ? m.calories : ''}" min="0" onchange="updateMeal(${idx},${mi},'calories',this.value !== '' ? parseInt(this.value) : null)">
+        <div class="meal-photo-cell">
+          ${photoCell}
+          <input type="file" accept="image/*" id="photo-input-${idx}-${mi}" style="display:none" onchange="uploadPhoto(${idx},${mi},this)">
+        </div>
+      </div>`;
+  });
+
+  return `
+    <div class="form-section">
+      <h3><span class="icon">🏋️</span> 运动</h3>
+      <div class="section-hint">强度值参考：1=静坐 · 3=散步 · 6=骑行 · 10=跳绳 · 12=HIIT极限</div>
+      ${exHtml}
+      <button class="btn-add" onclick="addExercise(${idx})">+ 添加运动</button>
+      <div class="steps-row">
+        <label>步数</label>
+        <input type="number" placeholder="0" value="${d.steps || ''}" min="0" onchange="updateField(${idx},'steps',parseInt(this.value)||0)">
+        <span class="neat-calc" id="neat-${idx}">${d.steps > 0 ? Math.round(d.steps * 45 / 1000) + ' kcal NEAT' : ''}</span>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3><span class="icon">🍽️</span> 饮食</h3>
+      ${mealHtml}
+    </div>
+
+    <div class="form-section">
+      <h3><span class="icon">📊</span> 身体数据</h3>
+      <div class="body-grid">
+        <div class="field"><label>体重(kg)</label><input type="number" step="0.1" min="0" placeholder="—" value="${d.weight != null ? d.weight : ''}" onchange="updateField(${idx},'weight',this.value !== '' ? parseFloat(this.value) : null)"></div>
+        <div class="field"><label>体脂率(%)</label><input type="number" step="0.1" min="0" placeholder="—" value="${d.bodyFat != null ? d.bodyFat : ''}" onchange="updateField(${idx},'bodyFat',this.value !== '' ? parseFloat(this.value) : null)"></div>
+        <div class="field"><label>腰围(cm)</label><input type="number" step="0.1" min="0" placeholder="—" value="${d.waist != null ? d.waist : ''}" onchange="updateField(${idx},'waist',this.value !== '' ? parseFloat(this.value) : null)"></div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3><span class="icon">🩺</span> 恢复</h3>
+      <div class="sleep-row">
+        <div class="field"><label>睡眠(小时)</label><input type="number" step="0.5" min="0" placeholder="—" value="${d.sleep != null ? d.sleep : ''}" onchange="updateField(${idx},'sleep',this.value !== '' ? parseFloat(this.value) : null)"></div>
+        <div class="field"><label>质量</label>
+          <select onchange="updateField(${idx},'sleepQuality',this.value)">
+            <option value="" ${!d.sleepQuality ? 'selected' : ''}>—</option>
+            <option value="好" ${d.sleepQuality === '好' ? 'selected' : ''}>🟢 好</option>
+            <option value="一般" ${d.sleepQuality === '一般' ? 'selected' : ''}>🟡 一般</option>
+            <option value="差" ${d.sleepQuality === '差' ? 'selected' : ''}>🔴 差</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3><span class="icon">📝</span> 备注</h3>
+      <textarea class="notes-area" placeholder="身体感受、伤病、特殊情况..." onchange="updateField(${idx},'notes',this.value)">${esc(d.notes)}</textarea>
+    </div>
+  `;
+}
+
+function esc(s) { return (s || '').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ===== Update functions =====
+function onExerciseSelect(dayIdx, exIdx, select) {
+  const opt = select.options[select.selectedIndex];
+  const isCustom = opt.dataset.custom === '1';
+  if (isCustom) {
+    D.days[dayIdx].exercises[exIdx].isCustom = true;
+    D.days[dayIdx].exercises[exIdx].type = '';
+    D.days[dayIdx].exercises[exIdx].met = 0;
+  } else {
+    D.days[dayIdx].exercises[exIdx].isCustom = false;
+    const metValue = parseFloat(select.value);
+    const metEntry = MET_TABLE.find(m => m.met === metValue && !m.isCustom);
+    D.days[dayIdx].exercises[exIdx].type = metEntry ? metEntry.type : '';
+    D.days[dayIdx].exercises[exIdx].met = metValue;
+  }
+  saveData(); renderForms(); updateLiveStats();
+}
+function updateExercise(dayIdx, exIdx, field, value) {
+  D.days[dayIdx].exercises[exIdx][field] = value;
+  saveData(); renderForms(); updateLiveStats();
+}
+function addExercise(dayIdx) {
+  D.days[dayIdx].exercises.push({ type: '', met: 0, duration: 0, isCustom: false });
+  saveData(); renderForms(); updateLiveStats();
+}
+function removeExercise(dayIdx, exIdx) {
+  if (D.days[dayIdx].exercises.length > 1) {
+    D.days[dayIdx].exercises.splice(exIdx, 1);
+  } else {
+    D.days[dayIdx].exercises[0] = { type: '', met: 0, duration: 0, isCustom: false };
+  }
+  saveData(); renderForms(); updateLiveStats();
+}
+function updateMeal(dayIdx, mealIdx, field, value) {
+  D.days[dayIdx].meals[mealIdx][field] = value;
+  saveData(); updateLiveStats();
+}
+function updateField(dayIdx, field, value) {
+  D.days[dayIdx][field] = value;
+  saveData(); renderTabs(); updateLiveStats();
+}
+function saveProfile() {
+  D.profile.goal = document.getElementById('pGoal').value;
+  D.profile.weight = parseFloat(document.getElementById('pWeight').value) || 68;
+  D.profile.bmr = parseInt(document.getElementById('pBmr').value) || 1605;
+  D.profile.bmrSource = document.getElementById('pBmrSource').value;
+  D.profile.proteinTarget = parseInt(document.getElementById('pProtein').value) || 122;
+  saveData(); renderForms(); updateLiveStats();
+}
+
+// ===== Photo handling =====
+function uploadPhoto(dayIdx, mealIdx, input) {
+  const file = input.files[0];
+  if (!file) return;
+  compressImage(file, (dataUrl) => {
+    D.days[dayIdx].meals[mealIdx].photo = dataUrl;
+    saveData(); renderForms(); updateLiveStats();
+  });
+}
+
+// Convert data URL to Blob without using fetch (CSP-safe)
+function dataUrlToBlob(dataUrl) {
+  const parts = dataUrl.split(',');
+  const m = parts[0].match(/:(.*?);/);
+  if (!m) throw new Error('Invalid data URL');
+  const mime = m[1];
+  const bstr = atob(parts[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new Blob([u8arr], { type: mime });
+}
+
+function compressImage(file, callback) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const maxW = 800, maxH = 800;
+      let w = img.width, h = img.height;
+      if (w > maxW) { h = h * maxW / w; w = maxW; }
+      if (h > maxH) { w = w * maxH / h; h = maxH; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      callback(canvas.toDataURL('image/jpeg', 0.85));
+    };
+    img.onerror = function() {
+      showToast('图片加载失败，请检查文件格式');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removePhoto(dayIdx, mealIdx) {
+  D.days[dayIdx].meals[mealIdx].photo = null;
+  saveData(); renderForms();
+}
+
+function previewPhoto(dayIdx, mealIdx) {
+  // Remove any existing overlay first
+  const existing = document.querySelector('.photo-preview-overlay');
+  if (existing) existing.remove();
+
+  const dataUrl = D.days[dayIdx].meals[mealIdx].photo;
+  if (!dataUrl) return;
+  const fileName = `${D.days[dayIdx].date}-${D.days[dayIdx].meals[mealIdx].name}.jpg`;
+  const overlay = document.createElement('div');
+  overlay.className = 'photo-preview-overlay';
+  overlay.innerHTML = `
+    <div class="photo-preview-content">
+      <button class="photo-close-btn" onclick="this.closest('.photo-preview-overlay').remove()">✕</button>
+      <img src="${dataUrl}" onclick="event.stopPropagation()">
+      <div class="photo-preview-info">${fileName}</div>
+      <div class="photo-preview-actions">
+        <button class="export-btn" onclick="event.stopPropagation();replacePhoto(${dayIdx},${mealIdx})">🔄 替换照片</button>
+        <button class="export-btn" style="border-color:var(--accent-red);color:var(--accent-red)" onclick="event.stopPropagation();removePhoto(${dayIdx},${mealIdx});this.closest('.photo-preview-overlay').remove();">🗑️ 删除</button>
+      </div>
+    </div>`;
+  overlay.onclick = () => overlay.remove();
+  document.body.appendChild(overlay);
+}
+
+function replacePhoto(dayIdx, mealIdx) {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = () => {
+    if (input.files[0]) {
+      compressImage(input.files[0], (dataUrl) => {
+        D.days[dayIdx].meals[mealIdx].photo = dataUrl;
+        saveData(); renderForms();
+        const overlay = document.querySelector('.photo-preview-overlay');
+        if (overlay) overlay.remove();
+        showToast('照片已替换');
+      });
+    }
+  };
+  input.click();
+}
+function onWeekChange() {
+  D.weekStart = document.getElementById('weekStart').value;
+  if (D.weekStart) {
+    const d = new Date(D.weekStart);
+    d.setDate(d.getDate() + 6);
+    D.weekEnd = d.toISOString().slice(0,10);
+    document.getElementById('weekEnd').value = D.weekEnd;
+    // Update day dates
+    D.days.forEach((day, i) => {
+      const dd = new Date(D.weekStart);
+      dd.setDate(dd.getDate() + i);
+      day.date = dd.toISOString().slice(0,10);
+    });
+  }
+  saveData(); renderTabs(); renderForms();
+}
+
+// ===== Save =====
+let saveTimer = null;
+function saveData() {
+  const status = document.getElementById('saveStatus');
+  status.textContent = '保存中...';
+  status.className = 'save-status saving';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem('fitness-tracker-data', JSON.stringify(D));
+    } catch(e) {
+      // localStorage might be full (photos), try stripping photos
+      try {
+        const stripped = JSON.parse(JSON.stringify(D));
+        stripped.days.forEach(d => d.meals.forEach(m => { if(m.photo) m.photo = undefined; }));
+        localStorage.setItem('fitness-tracker-data', JSON.stringify(stripped));
+        status.textContent = '已保存（照片未持久化）';
+        status.className = 'save-status saved';
+        return;
+      } catch(e2) {
+        status.textContent = '保存失败';
+        status.className = 'save-status saving';
+        return;
+      }
+    }
+    updateEmbeddedData();
+    status.textContent = '已保存';
+    status.className = 'save-status saved';
+  }, 400);
+}
+
+function updateEmbeddedData() {
+  document.getElementById('trackerData').textContent = JSON.stringify(D, null, 2);
+}
+
+// ===== Live stats =====
+function updateLiveStats() {
+  const d = D.days[activeDay];
+  // Intake
+  const intake = d.meals.reduce((s, m) => s + (m.calories || 0), 0);
+  // TDEE = BMR*1.1 + NEAT + EAT
+  const bmrPart = Math.round(D.profile.bmr * 1.1);
+  const neat = d.steps > 0 ? Math.round(d.steps * 45 / 1000) : 0;
+  const eat = d.exercises.reduce((s, e) =>
+    s + (e.met > 0 && e.duration > 0 ? Math.round(e.met * D.profile.weight * (e.duration / 60)) : 0), 0);
+  const tdee = bmrPart + neat + eat;
+  const deficit = intake - tdee;
+
+  document.getElementById('liveIntake').textContent = intake > 0 ? intake : '—';
+  document.getElementById('liveTdee').textContent = tdee > bmrPart ? tdee : '—';
+  const deficitEl = document.getElementById('liveDeficit');
+  if (intake > 0 && tdee > bmrPart) {
+    deficitEl.textContent = (deficit > 0 ? '+' : '') + deficit;
+    deficitEl.className = 'stat-value ' + (deficit < 0 ? 'green' : deficit > 0 ? 'red' : 'blue');
+  } else {
+    deficitEl.textContent = '—';
+    deficitEl.className = 'stat-value';
+  }
+  document.getElementById('liveProtein').textContent = D.profile.proteinTarget + 'g';
+}
+
+// ===== Export functions =====
+function generateMDContent() {
+  const goal = D.profile.goal;
+  const deficitLabel = goal === '减脂' ? '赤字 -300~-500' : goal === '增肌' ? '盈余 +200~+400' : '维持 0 附近';
+  let md = `---\ndateCreate: ${D.weekStart}\ndateUpdate: ${new Date().toISOString().slice(0,10)}\ntags:\n  - 健身\n  - 饮食\n  - 日志\n  - 持续更新\n---\n\n> 当前目标：${goal} | 目标${deficitLabel} kcal | 蛋白质目标：${D.profile.proteinTarget} g/天\n`;
+
+  D.days.forEach(d => {
+    const dateObj = d.date ? new Date(d.date + 'T00:00:00') : null;
+    const weekday = dateObj && !isNaN(dateObj) ? ['日','一','二','三','四','五','六'][dateObj.getDay()] : '?';
+    md += `\n## 📅 ${d.date}（${weekday}）\n`;
+
+    // Exercise
+    md += `\n### 🏋️ 运动\n`;
+    d.exercises.forEach(ex => {
+      if (ex.duration > 0) {
+        const cal = ex.met > 0 ? Math.round(ex.met * D.profile.weight * (ex.duration / 60)) : 0;
+        md += `- [x] ${ex.type}，时长：${ex.duration} 分钟${cal > 0 ? `（~${cal} kcal）` : ''}\n`;
+      }
+    });
+    if (d.steps > 0) md += `- 步数：${d.steps}\n`;
+
+    // Meals
+    md += `\n### 🍽️ 饮食\n\n| 餐次 | 内容 | 热量 |\n| --- | --- | --- |\n`;
+    d.meals.forEach(m => {
+      const cal = m.calories != null ? `~${m.calories}` : '';
+      const photoTag = m.photo ? ` 📷[${d.date}-${m.name}.jpg]` : '';
+      md += `| ${m.name} | ${m.items || ''}${photoTag} | ${cal} |\n`;
+    });
+
+    // Body data
+    md += `\n### 📊 身体数据\n\n| 指标 | 数值 |\n| --- | --- |\n`;
+    if (d.weight != null) md += `| 体重 | ${d.weight} kg |\n`;
+    if (d.bodyFat != null) md += `| 体脂率 | ${d.bodyFat}% |\n`;
+    if (d.waist != null) md += `| 腰围 | ${d.waist} cm |\n`;
+
+    // Sleep
+    md += `\n### 🩺 伤病状态\n\n- 睡眠：${d.sleep || '—'} 小时${d.sleepQuality ? ` | ${d.sleepQuality === '好' ? '🟢好' : d.sleepQuality === '一般' ? '🟡一般' : '🔴差'}` : ''}\n`;
+
+    // Notes
+    if (d.notes) md += `\n### 📝 备注\n\n${d.notes}\n`;
+
+    md += `\n---\n`;
+  });
+
+  // Append tracker-data JSON block for round-trip (strip base64 photos)
+  const stripped = JSON.parse(JSON.stringify(D));
+  stripped.days.forEach(d => {
+    d.meals.forEach(m => {
+      if (m.photo) { m.hasPhoto = true; m.photoFile = `${d.date}-${m.name}.jpg`; m.photo = undefined; }
+    });
+  });
+  md += `\n\`\`\`tracker-data\n${JSON.stringify(stripped)}\n\`\`\`\n`;
+
+  return md;
+}
+
+function exportMD() {
+  const md = generateMDContent();
+  downloadFile(md, `每周追踪 ${D.weekStart}~${D.weekEnd}.md`, 'text/markdown');
+  showToast('Markdown 已导出');
+}
+
+// ===== IndexedDB for directory handle persistence =====
+let _db = null;
+function initDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('fitnessTracker', 1);
+    req.onupgradeneeded = (e) => { e.target.result.createObjectStore('handles'); };
+    req.onsuccess = (e) => { _db = e.target.result; resolve(_db); };
+    req.onerror = (e) => reject(e);
+  });
+}
+async function saveDirHandle(handle) {
+  await initDB();
+  return new Promise((resolve, reject) => {
+    const tx = _db.transaction('handles', 'readwrite');
+    tx.objectStore('handles').put(handle, 'saveDir');
+    tx.oncomplete = resolve; tx.onerror = reject;
+  });
+}
+async function loadDirHandle() {
+  try { await initDB(); } catch(e) { return null; }
+  return new Promise((resolve) => {
+    const tx = _db.transaction('handles', 'readonly');
+    const req = tx.objectStore('handles').get('saveDir');
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror = () => resolve(null);
+  });
+}
+
+// ===== Save directory picker =====
+async function pickSaveDir() {
+  if (!('showDirectoryPicker' in window)) {
+    showToast('当前浏览器不支持目录选择，将使用剪贴板模式');
+    return;
+  }
+  try {
+    const handle = await window.showDirectoryPicker({ mode: 'readwrite' });
+    await saveDirHandle(handle);
+    // Auto-fill folder name; user can edit to add full path
+    const el = document.getElementById('saveDirName');
+    if (!el.value || el.value === handle.name) {
+      el.value = handle.name;
+    }
+    el.classList.add('active');
+    saveDirPath();
+    // Focus and select text to encourage user to complete the full path
+    el.focus();
+    el.select();
+    showToast('目录「' + handle.name + '」已选择，请补全完整路径（如 E:\\...\\' + handle.name + '）');
+    validateDirPath();
+  } catch(e) { /* user cancelled */ }
+}
+
+function saveDirPath() {
+  const el = document.getElementById('saveDirName');
+  localStorage.setItem('fitness-tracker-dirpath', el.value || '');
+  validateDirPath();
+}
+
+function validateDirPath() {
+  const el = document.getElementById('saveDirName');
+  const val = el.value.trim();
+  if (!val) {
+    el.classList.remove('active', 'warning');
+    return;
+  }
+  // Full path should contain a drive letter (e.g. "E:\") or start with "/"
+  const isFullPath = /^[A-Za-z]:[\\\/]/.test(val) || val.startsWith('/');
+  if (isFullPath) {
+    el.classList.add('active');
+    el.classList.remove('warning');
+  } else {
+    el.classList.add('warning');
+    el.classList.remove('active');
+  }
+}
+
+function updateDirDisplay(name) {
+  const el = document.getElementById('saveDirName');
+  // Restore saved path from localStorage, fall back to folder name
+  const saved = localStorage.getItem('fitness-tracker-dirpath');
+  if (saved) {
+    el.value = saved;
+  } else if (name) {
+    el.value = name;
+  } else {
+    el.value = '';
+  }
+  validateDirPath();
+}
+
+async function initSaveDir() {
+  // Restore saved path text first
+  const saved = localStorage.getItem('fitness-tracker-dirpath');
+  if (saved) {
+    const el = document.getElementById('saveDirName');
+    el.value = saved;
+    validateDirPath();
+  }
+  // Verify directory handle still works
+  const handle = await loadDirHandle();
+  if (handle) {
+    let perm = await handle.queryPermission({ mode: 'readwrite' });
+    if (perm === 'prompt') {
+      perm = await handle.requestPermission({ mode: 'readwrite' });
+    }
+    if (perm !== 'granted' && !saved) {
+      const el = document.getElementById('saveDirName');
+      el.value = '';
+      el.classList.remove('active', 'warning');
+    }
+  }
+}
+
+// ===== Main save function =====
+async function saveAndSend(reportType) {
+  saveData();
+  const trigger = reportType || '周报';
+
+  // Prepare photo list
+  let photoList = [];
+  D.days.forEach((d, i) => {
+    d.meals.forEach((m, j) => {
+      if (m.photo) {
+        photoList.push({ dayIdx: i, mealIdx: j, day: d.day, date: d.date, meal: m.name, fileName: `${d.date}-${m.name}.jpg` });
+      }
+    });
+  });
+
+  // Generate MD content and filename
+  const mdContent = generateMDContent();
+  const now = new Date();
+  const ts = now.getFullYear().toString() +
+    String(now.getMonth() + 1).padStart(2, '0') +
+    String(now.getDate()).padStart(2, '0') + '-' +
+    String(now.getHours()).padStart(2, '0') +
+    String(now.getMinutes()).padStart(2, '0');
+  const fileName = `每周追踪 ${D.weekStart}~${D.weekEnd}_${ts}.md`;
+
+  // Try File System Access API
+  let fsApiOk = false;
+  let savedDir = '';
+  let photoSaved = [];
+  let photoFailed = [];
+
+  if ('showDirectoryPicker' in window) {
+    let handle = await loadDirHandle();
+    if (!handle) {
+      try {
+        handle = await window.showDirectoryPicker({ mode: 'readwrite' });
+        await saveDirHandle(handle);
+        const el = document.getElementById('saveDirName');
+        if (!el.value) el.value = handle.name;
+        saveDirPath();
+        showToast('目录「' + handle.name + '」已选择，请补全完整路径（如 E:\\...\\' + handle.name + '）');
+      } catch(e) { /* user cancelled */ }
+    }
+
+    if (handle) {
+      let perm = await handle.queryPermission({ mode: 'readwrite' });
+      if (perm === 'prompt') perm = await handle.requestPermission({ mode: 'readwrite' });
+
+      if (perm === 'granted') {
+        try {
+          // Save MD file
+          const mdFile = await handle.getFileHandle(fileName, { create: true });
+          const mdWritable = await mdFile.createWritable();
+          await mdWritable.write(mdContent);
+          await mdWritable.close();
+
+          // Verify by reading back (detect fake FSAPI)
+          const verifyFile = await mdFile.getFile();
+          if (verifyFile.size > 0) {
+            fsApiOk = true;
+            savedDir = document.getElementById('saveDirName').value || handle.name;
+
+            // Save photos
+            for (const p of photoList) {
+              try {
+                const photoData = D.days[p.dayIdx].meals[p.mealIdx].photo;
+                if (photoData) {
+                  const blob = dataUrlToBlob(photoData);
+                  const photoFile = await handle.getFileHandle(p.fileName, { create: true });
+                  const photoWritable = await photoFile.createWritable();
+                  await photoWritable.write(blob);
+                  await photoWritable.close();
+                  photoSaved.push(p.fileName);
+                }
+              } catch(pe) {
+                console.error('Photo save failed:', p.fileName, pe);
+                photoFailed.push(`${p.fileName}(${pe.message || pe.name || '未知错误'})`);
+              }
+            }
+          }
+        } catch(e) {
+          console.error('FSAPI save failed:', e);
+        }
+      }
+    }
+  }
+
+  // Build clipboard message - ALWAYS include tracker-data JSON
+  let clipboardMsg = trigger;
+  if (reportType === '日报') {
+    clipboardMsg = `日报\n当前查看：${D.days[activeDay].day} ${D.days[activeDay].date}`;
+  }
+
+  // Prepare JSON data
+  const stripped = JSON.parse(JSON.stringify(D));
+  if (fsApiOk) {
+    // Files saved to disk - strip photo base64, AI reads from disk
+    stripped.days.forEach(d => {
+      d.meals.forEach(m => {
+        if (m.photo) { m.hasPhoto = true; m.photoFile = `${d.date}-${m.name}.jpg`; m.photo = undefined; }
+      });
+    });
+    clipboardMsg += `\n保存目录：${savedDir}`;
+    // Warn if path is not a full path (no drive letter)
+    if (!/^[A-Za-z]:[\\\/]/.test(savedDir) && !savedDir.startsWith('/')) {
+      clipboardMsg += `\n⚠️ 目录路径不完整（仅有文件夹名），AI可能需要全盘搜索`;
+    }
+    if (photoSaved.length > 0) {
+      clipboardMsg += `\n食物照片：${photoSaved.join('、')}`;
+    }
+  } else {
+    // Files NOT saved - keep photo base64 in JSON so AI can decode and view
+    stripped.days.forEach(d => {
+      d.meals.forEach(m => {
+        if (m.photo) { m.hasPhoto = true; m.photoFile = `${d.date}-${m.name}.jpg`; }
+      });
+    });
+  }
+  clipboardMsg += `\n<tracker-data>\n${JSON.stringify(stripped)}\n</tracker-data>`;
+
+  // Copy to clipboard
+  try {
+    await navigator.clipboard.writeText(clipboardMsg);
+  } catch(e) {
+    const ta = document.createElement('textarea');
+    ta.value = clipboardMsg; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  }
+
+  // Show toast
+  if (fsApiOk) {
+    if (photoFailed.length > 0) {
+      showToast(`MD已保存到「${savedDir}」，但${photoFailed.length}张照片失败。数据已复制到剪贴板`);
+    } else if (photoSaved.length > 0) {
+      showToast(`已保存到「${savedDir}」含${photoSaved.length}张照片。切回对话粘贴即可`);
+    } else {
+      showToast(`已保存到「${savedDir}」。切回对话粘贴即可`);
+    }
+  } else {
+    showToast(`数据已复制到剪贴板（含照片数据），切回对话粘贴即可`);
+  }
+}
+
+// ===== Load data from latest MD file (round-trip) =====
+async function loadFromMD() {
+  if (!('showDirectoryPicker' in window)) {
+    showToast('当前浏览器不支持读取本地文件');
+    return;
+  }
+
+  let handle = await loadDirHandle();
+  if (!handle) {
+    showToast('请先点击「选择目录」设置保存目录');
+    return;
+  }
+
+  // Verify permission
+  let perm = await handle.queryPermission({ mode: 'read' });
+  if (perm === 'prompt') {
+    perm = await handle.requestPermission({ mode: 'read' });
+  }
+  if (perm !== 'granted') {
+    showToast('未获得目录读取权限');
+    return;
+  }
+
+  try {
+    // List all MD files matching pattern, find the latest
+    let mdFiles = [];
+    for await (const entry of handle.values()) {
+      if (entry.kind === 'file' && entry.name.startsWith('每周追踪') && entry.name.endsWith('.md')) {
+        mdFiles.push(entry);
+      }
+    }
+
+    if (mdFiles.length === 0) {
+      showToast('保存目录中未找到追踪数据文件');
+      return;
+    }
+
+    // Sort by name descending (filename contains timestamp, latest first)
+    mdFiles.sort((a, b) => b.name.localeCompare(a.name));
+    const latestEntry = mdFiles[0];
+
+    // Read file content
+    const file = await latestEntry.getFile();
+    const text = await file.text();
+
+    // Extract tracker-data JSON block
+    const match = text.match(/```tracker-data\r?\n([\s\S]*?)\r?\n```/);
+    if (!match) {
+      showToast('文件中未找到 tracker-data 数据块，可能文件格式过旧');
+      return;
+    }
+
+    const loadedData = JSON.parse(match[1]);
+
+    // Preserve current photos (loaded data has hasPhoto but no base64)
+    const currentPhotos = {};
+    D.days.forEach((d, i) => {
+      d.meals.forEach((m, j) => {
+        if (m.photo) currentPhotos[`${i}-${j}`] = m.photo;
+      });
+    });
+
+    // Confirm
+    if (!confirm(`从「${latestEntry.name}」加载数据？\n当前未保存的数据将被覆盖。`)) return;
+
+    // Replace data, restore photos
+    D = loadedData;
+    D.days.forEach((d, i) => {
+      d.meals.forEach((m, j) => {
+        if (currentPhotos[`${i}-${j}`]) {
+          // Restore from memory
+          m.photo = currentPhotos[`${i}-${j}`];
+        } else if (m.hasPhoto && m.photoFile) {
+          // Try to read photo file from directory
+          m._needPhotoLoad = m.photoFile;
+        }
+      });
+    });
+
+    // Async: load photo files from directory
+    let photoLoaded = 0;
+    for (const d of D.days) {
+      for (const m of d.meals) {
+        if (m._needPhotoLoad) {
+          try {
+            const photoEntry = await handle.getFileHandle(m._needPhotoLoad);
+            const photoFile = await photoEntry.getFile();
+            const reader = new FileReader();
+            const dataUrl = await new Promise((resolve, reject) => {
+              reader.onload = () => resolve(reader.result);
+              reader.onerror = reject;
+              reader.readAsDataURL(photoFile);
+            });
+            m.photo = dataUrl;
+            photoLoaded++;
+          } catch(e) {
+            console.warn(`Photo not found: ${m._needPhotoLoad}`);
+          }
+          delete m._needPhotoLoad;
+        }
+      }
+    }
+
+    saveData();
+    renderTabs();
+    renderForms();
+    updateLiveStats();
+    updateEmbeddedData();
+
+    showToast(`已从「${latestEntry.name}」更新数据${photoLoaded > 0 ? `，已加载 ${photoLoaded} 张照片` : ''}`);
+  } catch(e) {
+    console.error('Load failed:', e);
+    showToast('读取数据失败：' + e.message);
+  }
+}
+
+// ===== Start new week: save current + shift dates =====
+async function startNewWeek() {
+  if (!confirm('是否保存数据，并开始新的一周？\n当前数据将保存为 MD 文件，然后清空开始新的一周。')) return;
+
+  // Save current data first
+  try {
+    await saveAndSend('周报');
+  } catch(e) {
+    console.error('Save before new week failed:', e);
+  }
+
+  // Shift weekStart +7 days
+  const oldStart = new Date(D.weekStart);
+  oldStart.setDate(oldStart.getDate() + 7);
+  D.weekStart = oldStart.toISOString().slice(0, 10);
+  const newEnd = new Date(oldStart);
+  newEnd.setDate(newEnd.getDate() + 6);
+  D.weekEnd = newEnd.toISOString().slice(0, 10);
+
+  // Regenerate empty days with new dates, keep profile
+  D.days = DAY_NAMES.map((name, i) => makeEmptyDay(name, D.weekStart, i));
+  activeDay = 0;
+
+  // Update weekStart/weekEnd inputs in profile bar
+  const wsInput = document.getElementById('weekStart');
+  if (wsInput) wsInput.value = D.weekStart;
+  const weInput = document.getElementById('weekEnd');
+  if (weInput) weInput.value = D.weekEnd;
+
+  saveData();
+  renderTabs();
+  renderForms();
+  updateLiveStats();
+  updateEmbeddedData();
+
+  showToast(`已保存并开始新的一周（${D.weekStart} ~ ${D.weekEnd}）`);
+}
+
+function downloadFile(content, filename, type) {
+  const blob = new Blob([content], { type: type + ';charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+let _toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  if (_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => { t.classList.remove('show'); _toastTimer = null; }, 2000);
+}
+
+// ===== Theme =====
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('fitness-theme', next);
+  updateThemeLabel(next);
+}
+function updateThemeLabel(theme) {
+  document.getElementById('themeLabel').textContent = theme === 'dark' ? '日间' : '深色';
+  const icon = document.getElementById('themeIcon');
+  if (theme === 'dark') {
+    icon.innerHTML = '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM12 1h2v3h-2V1zm0 18h2v3h-2v-3zM4.22 5.64l1.42-1.42 2.12 2.12-1.42 1.42-2.12-2.12zm12.72 12.72l1.42-1.42 2.12 2.12-1.42 1.42-2.12-2.12zM1 11h3v2H1v-2zm18 0h3v2h-3v-2zM4.22 18.36l2.12-2.12 1.42 1.42-2.12 2.12-1.42-1.42zM17.64 5.64l2.12-2.12 1.42 1.42-2.12 2.12-1.42-1.42z"/>';
+  } else {
+    icon.innerHTML = '<path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>';
+  }
+}
+
+// ===== Start =====
+init();
+</script>
+</body>
+</html>
